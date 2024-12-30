@@ -1,0 +1,162 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_STUDENTS 100
+
+typedef struct {
+    int id;
+    char name[50];
+    int age;
+    float marks[5];
+    float average;
+    char grade;
+} Student;
+
+Student students[MAX_STUDENTS];
+int studentCount = 0;
+
+void addStudent();
+void editStudent();
+void deleteStudent();
+void displayStudents();
+void calculateGrades(Student *student);
+
+int main() {
+    int choice;
+
+    while (1) {
+        printf("\nStudent Management System\n");
+        printf("1. Add Student\n");
+        printf("2. Edit Student\n");
+        printf("3. Delete Student\n");
+        printf("4. Display Students\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addStudent();
+                break;
+            case 2:
+                editStudent();
+                break;
+            case 3:
+                deleteStudent();
+                break;
+            case 4:
+                displayStudents();
+                break;
+            case 5:
+                printf("Exiting...\n");
+                exit(0);
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
+
+void addStudent() {
+    if (studentCount >= MAX_STUDENTS) {
+        printf("Maximum student limit reached. Cannot add more students.\n");
+        return;
+    }
+
+    Student newStudent;
+    newStudent.id = studentCount + 1;
+    printf("Enter name: ");
+    scanf("%s", newStudent.name);
+    printf("Enter age: ");
+    scanf("%d", &newStudent.age);
+
+    printf("Enter marks for 5 subjects: \n");
+    for (int i = 0; i < 5; i++) {
+        printf("Subject %d: ", i + 1);
+        scanf("%f", &newStudent.marks[i]);
+    }
+
+    calculateGrades(&newStudent);
+    students[studentCount++] = newStudent;
+    printf("Student added successfully.\n");
+}
+
+void editStudent() {
+    int id;
+    printf("Enter student ID to edit: ");
+    scanf("%d", &id);
+
+    if (id < 1 || id > studentCount) {
+        printf("Invalid student ID.\n");
+        return;
+    }
+
+    Student *student = &students[id - 1];
+    printf("Editing student with ID: %d\n", student->id);
+    printf("Enter new name: ");
+    scanf("%s", student->name);
+    printf("Enter new age: ");
+    scanf("%d", &student->age);
+
+    printf("Enter new marks for 5 subjects: \n");
+    for (int i = 0; i < 5; i++) {
+        printf("Subject %d: ", i + 1);
+        scanf("%f", &student->marks[i]);
+    }
+
+    calculateGrades(student);
+    printf("Student updated successfully.\n");
+}
+
+void deleteStudent() {
+    int id;
+    printf("Enter student ID to delete: ");
+    scanf("%d", &id);
+
+    if (id < 1 || id > studentCount) {
+        printf("Invalid student ID.\n");
+        return;
+    }
+
+    for (int i = id - 1; i < studentCount - 1; i++) {
+        students[i] = students[i + 1];
+    }
+
+    studentCount--;
+    printf("Student deleted successfully.\n");
+}
+
+void displayStudents() {
+    if (studentCount == 0) {
+        printf("No students to display.\n");
+        return;
+    }
+
+    printf("\nStudent Records:\n");
+    printf("ID\tName\t\tAge\tAverage\tGrade\n");
+    for (int i = 0; i < studentCount; i++) {
+        Student student = students[i];
+        printf("%d\t%s\t\t%d\t%.2f\t%c\n", student.id, student.name, student.age, student.average, student.grade);
+    }
+}
+
+void calculateGrades(Student *student) {
+    float total = 0;
+    for (int i = 0; i < 5; i++) {
+        total += student->marks[i];
+    }
+
+    student->average = total / 5;
+
+    if (student->average >= 90) {
+        student->grade = 'A';
+    } else if (student->average >= 75) {
+        student->grade = 'B';
+    } else if (student->average >= 50) {
+        student->grade = 'C';
+    } else {
+        student->grade = 'F';
+    }
+}
